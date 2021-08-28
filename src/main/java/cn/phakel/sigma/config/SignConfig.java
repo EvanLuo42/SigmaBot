@@ -25,10 +25,21 @@
 
 package cn.phakel.sigma.config;
 
+import lombok.AllArgsConstructor;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author EvanLuo42
  * @date 2021/8/27 7:56 下午
  */
 public class SignConfig {
-    public SignUserConfig[] sign;
+    public Map<Long, User> sign = new HashMap<>();
+
+    @AllArgsConstructor
+    public static class User {
+        public Integer score = 0;
+        public String lastSignedDate;
+    }
 }

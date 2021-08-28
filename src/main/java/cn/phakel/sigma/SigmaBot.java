@@ -1,6 +1,6 @@
 package cn.phakel.sigma;
 
-import cn.phakel.sigma.config.SignUserConfig;
+import cn.phakel.sigma.config.SignConfig;
 import cn.phakel.sigma.model.Github;
 import cn.phakel.sigma.model.Setu;
 import cn.phakel.sigma.model.Weather;
@@ -18,7 +18,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 
 import static cn.phakel.sigma.Config.*;
 
@@ -156,29 +155,27 @@ public class SigmaBot extends AbilityBot {
                     Logger.log(ctx.user().getUserName() + " used command /sign");
                     DateTimeFormatter fmDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                     LocalDateTime now = LocalDateTime.now();
-                    int correctUser = 0;
-                    for (SignUserConfig suc : Main.getSignConfig().get().sign) {
-                        if (suc.chatId.equals(ctx.chatId())) {
-                            correctUser++;
 
-                            if (!suc.lastSignedDate.equals(now.format(fmDate))) {
-                                suc.score++;
-                                suc.lastSignedDate = now.format(fmDate);
-                                silent.send("Sign successfully. Score +1", ctx.chatId());
-                                Logger.log( ctx.chatId() + "signed");
-                            } else {
-                                silent.send("You have signed today.", ctx.chatId());
-                            }
+                    if (Main.getSignConfig().get().sign.containsKey(ctx.chatId())) {
+                        SignConfig.User user = Main.getSignConfig().get().sign.get(ctx.chatId());
+
+                        if (!user.lastSignedDate.equals(now.format(fmDate))) {
+                            user.score++;
+                            user.lastSignedDate = now.format(fmDate);
+                            silent.send("Sign successfully. Score +1", ctx.chatId());
+                            Logger.log( ctx.chatId() + " signed");
+                        } else {
+                            silent.send("You have signed today.", ctx.chatId());
                         }
-                    }
-
-                    if (correctUser == 0) {
-                        Arrays.stream(Main.getSignConfig().get().sign).toList().add(new SignUserConfig(ctx.chatId(), 1, now.format(fmDate)));
+                    } else {
+                        Main.getSignConfig().get().sign.put(ctx.chatId(), new SignConfig.User(1, now.format(fmDate)));
                         silent.send("Sign successfully. Score +1", ctx.chatId());
-                        Logger.log( ctx.chatId() + "signed");
+                        Logger.log( ctx.chatId() + " signed");
                     }
 
                     Main.getSignConfig().saveConfig();
+
+                    Logger.log(Main.getSignConfig().get().sign.get(1082731192L).toString());
                 }).build();
     }
 }
