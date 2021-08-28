@@ -174,8 +174,6 @@ public class SigmaBot extends AbilityBot {
                     }
 
                     Main.getSignConfig().saveConfig();
-
-                    Logger.log(Main.getSignConfig().get().sign.get(1082731192L).toString());
                 }).build();
     }
 }
